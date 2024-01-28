@@ -1,0 +1,10 @@
+header,footer {
+    background-color: rgba(34, 34, 34, 0.397);
+}
+
+body{
+    min-height: 100vh;
+    display: grid;
+    grid-auto-flow: auto auto 1fr auto;
+    margin: 0;
+}
