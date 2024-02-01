@@ -8,3 +8,9 @@ body{
     grid-auto-flow: auto auto 1fr auto;
     margin: 0;
 }
+
+ul.errors{
+    color:darkred;
+    font-weight: bold;
+    font-size: 0.8em;
+}

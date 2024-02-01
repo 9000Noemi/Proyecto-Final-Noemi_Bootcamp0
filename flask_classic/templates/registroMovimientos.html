@@ -1,27 +1,99 @@
+<style> 
+   form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+</style>
+
 {% extends "base.html" %}
 
 {% block contenido %}
 
-<form action="/purchase" method="post">
+<h1>Compra / Venta / Tradeo</h1>
 
-    
-  
-  
-  </form>
-  <span>{{dataForm}}</span>
-  <!--INSERTAMOS LOS ICONOS CALCULATE Y CHECK QUE AHORA ESTAN EN BASE--> 
+  <form action="/purchase" method="post">
+    {{dataForm.csrf_token}} 
 
-  <a href="#">
-  <span class="material-symbols-outlined">
-    check_box
-    </span>
-  </a>
+    {{dataForm.moneda_from.label}}
+    {{dataForm.moneda_from}}
+    {% if dataForm.moneda_from.errors %}
+        <ul class="errors">
+        {% for error in dataForm.moneda_from.errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+        </ul>
 
-  <a href="#">
-    <span class="material-symbols-outlined">
-      calculate
-      </span>
-    </a>
-      
-      
+
+    {{dataForm.moneda_to.label}}
+    {{dataForm.moneda_to}}
+    {% if dataForm.moneda_to.errors %}
+    <ul class="errors">
+    {% for error in dataForm.moneda_to.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+
+
+    {{dataForm.cantidad.label}}
+    {{dataForm.cantidad}}
+    {% if dataForm.cantidad.errors %}
+    <ul class="errors">
+    {% for error in dataForm.cantidad.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+
+
+    {{dataForm.submit}}
+
+    {{dataForm.tasa_cambio.label}}
+    {{dataForm.tasa_cambio}}
+    {% if dataForm.tasa_cambio.errors %}
+    <ul class="errors">
+    {% for error in dataForm.tasa_cambio.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+
+
+    {{dataForm.precio_unitario.label}}
+    {{dataForm.precio_unitario}}
+    {% if dataForm.precio_unitario.errors %}
+    <ul class="errors">
+    {% for error in dataForm.precio_unitario.errors %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+
+
+    {{dataForm.submit}}
+</form>      
 {% endblock %}
