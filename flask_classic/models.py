@@ -1,5 +1,3 @@
-import sqlite3
-from flask_classic import ORIGIN_DATA
 from flask_classic.db_conexion import Conexion
 
 def insert(registroForm):
@@ -24,7 +22,13 @@ def select_all():
             posicion +=1
        
         lista_diccionario.append(diccionario) 
-    conectar.con.close() #Esto está bien????????????
+    conectar.con.close() 
     
     return lista_diccionario   
 
+def coin_sum(moneda_to):
+    conectar = Conexion("SELECT SUM(cantidad_to) FROM Movimientos WHERE moneda_to=?", (moneda_to,))
+    resultado = conectar.res.fetchall()
+    conectar.con.close()
+
+    return resultado[0]

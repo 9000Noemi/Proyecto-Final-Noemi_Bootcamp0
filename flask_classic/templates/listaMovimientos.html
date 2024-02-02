@@ -3,31 +3,32 @@
 {% block contenido %}
 
 <h1>Movimientos</h1>
-
-
-<table role="grid">
-    <thead>
-    <tr>
-        <th>Fecha</th>
-        <th>Hora</th>
-        <th>Moneda_from</th>
-        <th>Cantidad_from</th>
-        <th>Moneda_to</th>
-        <th>Cantidad_to</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for item in datos %}
-    <tr>
-        <td>{{item.date}}</td>
-        <td>{{item.time}}</td>
-        <td>{{item.moneda_from}}</td>
-        <td>{{item.cantidad_from}}</td>
-        <td>{{item.moneda_to}}</td>
-        <td>{{item.cantidad_to}}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
-
+{% if datos %}
+    <table role="grid">
+        <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Moneda_from</th>
+            <th>Cantidad_from</th>
+            <th>Moneda_to</th>
+            <th>Cantidad_to</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in datos %}
+        <tr>
+            <td>{{item.date}}</td>
+            <td>{{item.time}}</td>
+            <td>{{item.moneda_from}}</td>
+            <td>{{item.cantidad_from}}</td>
+            <td>{{item.moneda_to}}</td>
+            <td>{{item.cantidad_to}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>SIN MOVIMIENTOS.</p>
+{% endif %}
 {% endblock %}
