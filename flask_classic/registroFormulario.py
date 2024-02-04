@@ -14,10 +14,3 @@ class RegistroFormulario(FlaskForm):
     precio_unitario= FloatField ('Precio unitario: ')
     submit= SubmitField('Ejecutar operación')
        
-        #lista_general = r
-        #precio_unitario = lista_general['rate'] * cantidad_from 
-        #response = [lista_general["rate"], precio_unitario]
-        #return response
-
-    #calcular= SubmitField('Calculate', calcular_cambio(moneda_from="moneda-from", moneda_to="moneda_to", cantidad_from="cantidad_from"))
-    #submit= SubmitField('Guardar')

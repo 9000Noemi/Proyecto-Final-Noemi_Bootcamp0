@@ -26,9 +26,52 @@ def select_all():
     
     return lista_diccionario   
 
+#Llamada a la BD y suma:
 def coin_sum(moneda_to):
+
+    #Comporbamos el saldo de una criptomoneda:
+    #  1. Sumamos todas las cantidades_to en filas cuya moneda_to es la criptomoneda buscada
     conectar = Conexion("SELECT SUM(cantidad_to) FROM Movimientos WHERE moneda_to=?", (moneda_to,))
+    resultado_to = conectar.res.fetchall()
+    conectar.con.close()
+
+    #  2. Sumamos todas la cantidades_from en filas cuya moneda_from es la criptomoneda buscada
+    conectar = Conexion("SELECT SUM(cantidad_from) FROM Movimientos WHERE moneda_from=?", (moneda_to,))
+    resultado_from = conectar.res.fetchall()
+    conectar.con.close()
+
+    #  3. El saldo es la resta (1 - 2)
+    #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)
+    resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
+    
+    return resultado
+    
+def total_invertido(moneda_from):
+    conectar = Conexion("SELECT SUM (cantidad_from) FROM Movimientos WHERE moneda_from =?", (moneda_from,))
     resultado = conectar.res.fetchall()
     conectar.con.close()
 
     return resultado[0]
+
+def total_obtenido(moneda_to):
+    conectar = Conexion("SELECT SUM (cantidad_to) FROM Movimientos WHERE moneda_to = ?", (moneda_to,))
+    resultado = conectar.res.fetchall()
+    conectar.con.close()
+
+    return resultado[0]
+
+def total_monedas():
+    conectar = Conexion("SELECT (moneda_from) FROM Movimientos")
+    resultado = conectar.res.fetchall()
+    conectar.con.close()
+
+    lista = []
+
+    for elemento in resultado:
+        lista.append(elemento[0])
+
+    return lista
+
+
+
+
