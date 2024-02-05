@@ -91,3 +91,10 @@
  
   <button type="execute">EXECUTE</button>>-->
   '''
+
+'''               
+<li {% if active_page == 'listaMovimientos' %}class= "active"{% endif %}><a href="/" role="button">Inicio</a></li>
+<li {% if active_page == 'registroMovimientos' %}class= "active"{% endif %}><a href="/purchase" role="button">Compra</a></li>
+<li {% if active_page == 'estadoInversion' %}class= "active"{% endif %}><a href="/status" role="button">Status</a></li>
+'''
+                

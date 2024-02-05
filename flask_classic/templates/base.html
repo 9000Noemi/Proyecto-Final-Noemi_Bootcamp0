@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRIPTOPY</title>
+    <title>CRIPTOPYN</title>
     <link rel="stylesheet" href="/static/pico.css">
     <link rel="stylesheet" href="/static/styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    
 </head>
 <body>
 
@@ -16,21 +18,24 @@
 
         <nav>
             <ul>
-                <li><strong><H2>CRYPTOPYN</H2></strong></li>
+                <li><strong><H1> <p>CRYPTOPYN</p></H1></strong></li>
               
             </ul>
-            <ul>
-                <li><a href="/" role="button">Inicio</a></li>
-                <li><a href="/purchase" role="button">Compra</a></li>
-                <li><a href="/status" role="button">Status</a></li>
-              </ul>
+            <ul> 
 
-    
+                <li {% if active_page == 'listaMovimientos' %}class="active"{% endif %}><a href="{{ '#' if active_page == 'listaMovimientos' else '/' }}" role="button">Inicio</a></li>
+                <li {% if active_page == 'registroMovimientos' %}class="active"{% endif %}><a href="{{ '#' if active_page == 'registroMovimientos' else '/purchase' }}" role="button">Compra</a></li>
+                <li {% if active_page == 'estadoInversion' %}class="active"{% endif %}><a href="{{ '#' if active_page == 'estadoInversion' else '/status' }}" role="button">Status</a></li>
+
+               
+            </ul>               
+            
           </nav>
 
     </div>
 
 </header>
+
 
 <section class="container">
     {% block contenido %}

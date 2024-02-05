@@ -1,7 +1,7 @@
 from wtforms import ValidationError
 from flask_classic import app
 from flask_classic.models import *
-from flask import render_template,request,redirect,flash
+from flask import render_template,request,redirect,flash, url_for
 import requests
 from config import APIKEY
 from datetime import date, datetime
@@ -14,13 +14,17 @@ def validate_moneda_from(moneda_from, cantidad):
         #Calculamos la cantidad de dinero que tenemos disponible para tradear de la moneda_from (llamada a la BD en coin_sum)
         get_moneda = coin_sum(moneda_from)
 
+        # En caso de no disponer de suficiente saldo, mostrar un error:
+        if get_moneda<cantidad:
+            flash("No tiene suficiente saldo de esta moneda")
+            raise ValidationError('No tiene suficiente saldo de esta moneda1.') 
+
         #Para evitar un error en caso de no tener X moneda mostramos una excepcion:
     except ValueError:
-        raise ValidationError("No dispone de saldo en esta moneda. ")
+        flash("No dispone de saldo en esta moneda")
+        raise ValidationError("No dispone de saldo en esta moneda1.")
     
-    # En caso de no disponer de suficiente saldo, mostrar un error:
-    if get_moneda<cantidad:
-        raise ValidationError('No tiene suficiente saldo de esta moneda.') 
+    
 
 
 def calcular_cambio(moneda_from, moneda_to):
@@ -28,14 +32,14 @@ def calcular_cambio(moneda_from, moneda_to):
     r = requests.get(url)
 
     lista_api = r.json()
+    print(lista_api)
     return lista_api["rate"]
-
 
 
 @app.route("/")
 def listaMovimientos():
     todos = select_all()
-    return render_template("listaMovimientos.html", datos= todos)
+    return render_template("listaMovimientos.html", datos= todos, active_page="listaMovimientos")
 
 @app.route("/purchase", methods=["GET","POST"])
 def registroMovimientos():
@@ -46,7 +50,9 @@ def registroMovimientos():
     if request.method == "POST":
         #Si pulsamos Calcular consulta a la api y añade a la plantilla el resultado de las variables
         if form.boton_calculo.data:
-            validate_moneda_from(form.moneda_from.data, form.cantidad.data)
+            #Para tener euros ilimitados sacamos los euros de la validación:
+            if form.moneda_from.data != "EUR":
+                validate_moneda_from(form.moneda_from.data, form.cantidad.data)
             consulta_api = calcular_cambio(form.moneda_from.data, form.moneda_to.data)
             rate_formateada = "{:.10f}".format(consulta_api)
             cantidad_cambio = consulta_api * form.cantidad.data
@@ -67,11 +73,11 @@ def registroMovimientos():
             return redirect("/")
         
         #Aquí cargamos la plantilla
-        return render_template("registroMovimientos.html", dataForm = form, resultado_api = rate_formateada, precio_cantidad = cantidad_formateada )
+        return render_template("registroMovimientos.html", dataForm = form, resultado_api = rate_formateada, precio_cantidad = cantidad_formateada, active_page="registroMovimientos")
 
     else:
         #si es solo GET cargamos la plantilla con el formulario vacío
-        return render_template("registroMovimientos.html",dataForm=form)
+        return render_template("registroMovimientos.html",dataForm=form, active_page="registroMovimientos")
 
 @app.route("/status")
 def estadoInversion():
@@ -103,9 +109,9 @@ def estadoInversion():
         #Hacemos una nueva lista con el valor en euros de cada crypto:
         total_valor_actual.append(valor_diferencia*valor_actual)
         
-    # Sumamos todos los elementos de la lista para obtener el total en euros de todas las cryto: 
+    # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
     print(sum(total_valor_actual))
     
-    return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)))
+    return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
 
 

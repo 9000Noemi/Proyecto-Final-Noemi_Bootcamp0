@@ -34,16 +34,18 @@ def coin_sum(moneda_to):
     conectar = Conexion("SELECT SUM(cantidad_to) FROM Movimientos WHERE moneda_to=?", (moneda_to,))
     resultado_to = conectar.res.fetchall()
     conectar.con.close()
-
+    
     #  2. Sumamos todas la cantidades_from en filas cuya moneda_from es la criptomoneda buscada
     conectar = Conexion("SELECT SUM(cantidad_from) FROM Movimientos WHERE moneda_from=?", (moneda_to,))
     resultado_from = conectar.res.fetchall()
     conectar.con.close()
+    if (''.join(map(str,resultado_from[0])) != 'None'):
+        #  3. El saldo es la resta (1 - 2)
+        #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)
+        resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
+    else:
+        resultado = float(''.join(map(str,resultado_to[0]))) 
 
-    #  3. El saldo es la resta (1 - 2)
-    #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)
-    resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
-    
     return resultado
     
 def total_invertido(moneda_from):

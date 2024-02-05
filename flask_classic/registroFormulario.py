@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField,StringField,FloatField,SubmitField,SelectField #creo q no necesito datefield xq no uso fechas
+from wtforms import DateField,StringField,FloatField,SubmitField,SelectField 
 from wtforms.validators import DataRequired, InputRequired, ValidationError
 from flask_classic.models import *
 import requests

@@ -1,5 +1,25 @@
-header,footer {
-    background-color: rgba(34, 34, 34, 0.397);
+header {
+    background-color: rgba(65, 64, 64, 0.938);
+    width: 100%;
+}
+
+p {color:rgba(255, 187, 0, 0.904);}
+
+
+
+
+nav ul li {
+        font-family: Arial;
+        font-size: 10px;
+}
+
+header nav ul li.active a {
+    background-color: rgba(255, 187, 0, 0.904);
+}
+
+
+footer {
+    background-color: rgba(8, 6, 6, 0.692)
 }
 
 body{
@@ -13,4 +33,10 @@ ul.errors{
     color:darkred;
     font-weight: bold;
     font-size: 0.8em;
+}
+
+ul.flashes{
+    color: rgb(125, 202, 8);
+    font-weight: bold;
+    font-size: 0.9em;
 }
