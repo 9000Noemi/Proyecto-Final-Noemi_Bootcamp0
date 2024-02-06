@@ -41,7 +41,7 @@ def coin_sum(moneda_to):
     conectar.con.close()
     if (''.join(map(str,resultado_from[0])) != 'None'):
         #  3. El saldo es la resta (1 - 2)
-        #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)
+        #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)))
         resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
     else:
         resultado = float(''.join(map(str,resultado_to[0]))) 
@@ -50,17 +50,28 @@ def coin_sum(moneda_to):
     
 def total_invertido(moneda_from):
     conectar = Conexion("SELECT SUM (cantidad_from) FROM Movimientos WHERE moneda_from =?", (moneda_from,))
-    resultado = conectar.res.fetchall()
+    resultado_bd = conectar.res.fetchall()
     conectar.con.close()
 
-    return resultado[0]
+    if (''.join(map(str,resultado_bd[0])) != 'None'):
+        resultado = float(''.join(map(str,resultado_bd[0])))
+    else:
+        resultado = 0
+
+    return resultado
 
 def total_obtenido(moneda_to):
     conectar = Conexion("SELECT SUM (cantidad_to) FROM Movimientos WHERE moneda_to = ?", (moneda_to,))
-    resultado = conectar.res.fetchall()
+    resultado_bd = conectar.res.fetchall()
     conectar.con.close()
+   
+    if (''.join(map(str,resultado_bd[0])) != 'None'):
+        resultado = float(''.join(map(str,resultado_bd[0])))
+    else:
+        resultado = 0
+    
+    return resultado
 
-    return resultado[0]
 
 def total_monedas():
     conectar = Conexion("SELECT (moneda_from) FROM Movimientos")

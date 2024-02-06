@@ -19,8 +19,11 @@ header nav ul li.active a {
 
 
 footer {
-    background-color: rgba(8, 6, 6, 0.692)
+    background-color: rgba(65, 64, 64, 0.938);
+    color: rgba(255, 187, 0, 0.904);
+    width: 100%;
 }
+
 
 body{
     min-height: 100vh;

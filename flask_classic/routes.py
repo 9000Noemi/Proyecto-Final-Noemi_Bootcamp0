@@ -16,13 +16,13 @@ def validate_moneda_from(moneda_from, cantidad):
 
         # En caso de no disponer de suficiente saldo, mostrar un error:
         if get_moneda<cantidad:
-            flash("No tiene suficiente saldo de esta moneda")
-            raise ValidationError('No tiene suficiente saldo de esta moneda1.') 
+            #flash("No tiene suficiente saldo de esta moneda")
+            raise ValidationError('No tiene suficiente saldo de esta moneda.') 
 
         #Para evitar un error en caso de no tener X moneda mostramos una excepcion:
     except ValueError:
-        flash("No dispone de saldo en esta moneda")
-        raise ValidationError("No dispone de saldo en esta moneda1.")
+        #flash("No dispone de saldo en esta moneda")
+        raise ValidationError("No dispone de saldo en esta moneda.")
     
     
 
@@ -30,9 +30,7 @@ def validate_moneda_from(moneda_from, cantidad):
 def calcular_cambio(moneda_from, moneda_to):
     url = f"https://rest.coinapi.io/v1/exchangerate/{moneda_from}/{moneda_to}?apikey={APIKEY}"
     r = requests.get(url)
-
     lista_api = r.json()
-    print(lista_api)
     return lista_api["rate"]
 
 
@@ -84,34 +82,36 @@ def estadoInversion():
     lista_cryptos = []
     
     #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla:
-    invertido = float(''.join(map(str, total_invertido ('EUR'))))
-    recuperado = float(''.join(map(str, total_obtenido ('EUR'))))
+    invertido = total_invertido ('EUR')
+    recuperado =  total_obtenido ('EUR')
     
-    valor_compra = invertido - recuperado
+    if recuperado != 0:
 
-    #Consulta a la base de datos para saber cuántos tipos de monedas tenemos:
-    monedas = total_monedas()
+        valor_compra = invertido - recuperado
 
-    #Recorremos la lista monedas para quitar los euros y cargar las cryptos en una nueva lista (lista_cryptos):
-    for moneda in monedas: 
-        if moneda != 'EUR':
-            lista_cryptos.append(moneda)
+        #Consulta a la base de datos para saber cuántos tipos de monedas tenemos:
+        monedas = total_monedas()
 
-    #Quitamos los duplicados de las cryptos:
-    lista_cryptos = list(dict.fromkeys(lista_cryptos))
-    total_valor_actual = []
+        #Recorremos la lista monedas para quitar los euros y cargar las cryptos en una nueva lista (lista_cryptos):
+        for moneda in monedas: 
+            if moneda != 'EUR':
+                lista_cryptos.append(moneda)
 
-    #Recorremos la lista de monedas para sacar el valor actual en euros de cada una:
-    for crypto in lista_cryptos:
-        valor_diferencia = float("".join(map(str, total_obtenido(crypto)))) - float("".join(map(str, total_invertido(crypto))))
-        valor_actual = calcular_cambio(crypto, "EUR") #Llamada a la API para sacar el rate
+        #Quitamos los duplicados de las cryptos:
+        lista_cryptos = list(dict.fromkeys(lista_cryptos))
+        total_valor_actual = []
         
-        #Hacemos una nueva lista con el valor en euros de cada crypto:
-        total_valor_actual.append(valor_diferencia*valor_actual)
+        #Recorremos la lista de monedas para sacar el valor actual en euros de cada una:
+        for crypto in lista_cryptos:
+            valor_diferencia = total_obtenido(crypto) - total_invertido(crypto)
+            valor_actual = calcular_cambio(crypto, "EUR") #Llamada a la API para sacar el rate
+            
+            #Hacemos una nueva lista con el valor en euros de cada crypto:
+            total_valor_actual.append(valor_diferencia*valor_actual)
+            
+        # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
         
-    # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
-    print(sum(total_valor_actual))
+        return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
     
-    return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
-
-
+    else:
+        return render_template("estadoInversion.html",dataInvertido= invertido, dataRecuperado="0", dataValorCompra="0", dataTotalValorActual="0",active_page="estadoInversion")
