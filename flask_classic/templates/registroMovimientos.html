@@ -17,16 +17,17 @@
 {% endwith %}
 
 
-<h1>Compra / Venta / Tradeo</h1>
+<ul class=errors>{{errors}}</ul>
 
+<h1>Compra / Venta / Tradeo</h1>
   <form action="/purchase" method="post">
     {{dataForm.csrf_token}} 
 
     {{dataForm.moneda_from.label}}
     {{dataForm.moneda_from}}
-    {% if dataForm.moneda_from.errors %}
-        <ul class="errors">
-        {% for error in dataForm.moneda_from.errors %}
+    {% if dataForm.moneda_from.errores %}
+        <ul class="errores">
+        {% for error in dataForm.moneda_from.errores %}
             <li>{{ error }}</li>
         {% endfor %}
         </ul>
@@ -34,9 +35,9 @@
 
     {{dataForm.moneda_to.label}}
     {{dataForm.moneda_to}}
-    {% if dataForm.moneda_to.errors %}
-    <ul class="errors">
-    {% for error in dataForm.moneda_to.errors %}
+    {% if dataForm.moneda_to.errores %}
+    <ul class="errores">
+    {% for error in dataForm.moneda_to.errores %}
         <li>{{ error }}</li>
     {% endfor %}
     </ul>
@@ -44,9 +45,9 @@
 
     {{dataForm.cantidad.label}}
     {{dataForm.cantidad}}
-    {% if dataForm.cantidad.errors %}
-    <ul class="errors">
-    {% for error in dataForm.cantidad.errors %}
+    {% if dataForm.cantidad.errores %}
+    <ul class="errores">
+    {% for error in dataForm.cantidad.errores %}
         <li>{{ error }}</li>
     {% endfor %}
     </ul>
@@ -56,9 +57,9 @@
 
     {{dataForm.tasa_cambio.label}}
     {{dataForm.tasa_cambio(value=resultado_api)}}
-    {% if dataForm.tasa_cambio.errors %}
-    <ul class="errors">
-    {% for error in dataForm.tasa_cambio.errors %}
+    {% if dataForm.tasa_cambio.errores %}
+    <ul class="errores">
+    {% for error in dataForm.tasa_cambio.errores %}
         <li>{{ error }}</li>
     {% endfor %}
     </ul>
@@ -66,9 +67,9 @@
 
     {{dataForm.precio_unitario.label}}
     {{dataForm.precio_unitario(value= precio_cantidad)}}
-    {% if dataForm.precio_unitario.errors %}
-    <ul class="errors">
-    {% for error in dataForm.precio_unitario.errors %}
+    {% if dataForm.precio_unitario.errores %}
+    <ul class="errores">
+    {% for error in dataForm.precio_unitario.errores %}
         <li>{{ error }}</li>
     {% endfor %}
     </ul>

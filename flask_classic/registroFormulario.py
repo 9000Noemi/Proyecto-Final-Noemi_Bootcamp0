@@ -8,7 +8,7 @@ from config import APIKEY
 class RegistroFormulario(FlaskForm):
     moneda_from =SelectField(choices=["EUR","BTC","ETH","USDT","BNB", "XRP","ADA","SOL","DOT","MATIC"])
     moneda_to= SelectField(choices=["EUR","BTC","ETH","USDT","BNB", "XRP","ADA","SOL","DOT","MATIC"])
-    cantidad= FloatField ('Cantidad: ', validators=[DataRequired(message= "Indica una cantidad.")])
+    cantidad= FloatField ('Cantidad: ')
     boton_calculo= SubmitField('Calcular')
     tasa_cambio= FloatField ('Tasa de cambio: ')
     precio_unitario= FloatField ('Precio unitario: ')

@@ -10,22 +10,23 @@ from flask_classic.registroFormulario import RegistroFormulario
 
 
 def validate_moneda_from(moneda_from, cantidad):
-    try:
-        #Calculamos la cantidad de dinero que tenemos disponible para tradear de la moneda_from (llamada a la BD en coin_sum)
-        get_moneda = coin_sum(moneda_from)
+    errores = []
+    
+    #Calculamos la cantidad de dinero que tenemos disponible para tradear de la moneda_from (llamada a la BD en coin_sum)
+    get_moneda = coin_sum(moneda_from)
 
-        # En caso de no disponer de suficiente saldo, mostrar un error:
-        if get_moneda<cantidad:
-            #flash("No tiene suficiente saldo de esta moneda")
-            raise ValidationError('No tiene suficiente saldo de esta moneda.') 
+    #Para evitar un error en caso de no tener X moneda:
+    if get_moneda == 0:
+        errores.append ('No dispone de esta moneda.') 
 
-        #Para evitar un error en caso de no tener X moneda mostramos una excepcion:
-    except ValueError:
-        #flash("No dispone de saldo en esta moneda")
-        raise ValidationError("No dispone de saldo en esta moneda.")
+    # En caso de no disponer de suficiente saldo, mostrar un error:
+        
+    elif get_moneda<cantidad:
+        errores.append ('No tiene suficiente saldo de esta moneda.') 
+    
+    return errores
     
     
-
 
 def calcular_cambio(moneda_from, moneda_to):
     url = f"https://rest.coinapi.io/v1/exchangerate/{moneda_from}/{moneda_to}?apikey={APIKEY}"
@@ -42,15 +43,18 @@ def listaMovimientos():
 @app.route("/purchase", methods=["GET","POST"])
 def registroMovimientos():
     form = RegistroFormulario()
-    consulta_api = 0
-
+    consulta_api = 0 
+    validate = []
     #Si es POST cargamos la plantilla html con la información básica que es el form y la que vayamos añadiendo cuando pulsamos los botones
     if request.method == "POST":
         #Si pulsamos Calcular consulta a la api y añade a la plantilla el resultado de las variables
         if form.boton_calculo.data:
             #Para tener euros ilimitados sacamos los euros de la validación:
             if form.moneda_from.data != "EUR":
-                validate_moneda_from(form.moneda_from.data, form.cantidad.data)
+                validate = validate_moneda_from(form.moneda_from.data, form.cantidad.data)
+            if validate:
+                return render_template("registroMovimientos.html",dataForm=form, active_page="registroMovimientos",errors=validate)
+
             consulta_api = calcular_cambio(form.moneda_from.data, form.moneda_to.data)
             rate_formateada = "{:.10f}".format(consulta_api)
             cantidad_cambio = consulta_api * form.cantidad.data
@@ -71,7 +75,7 @@ def registroMovimientos():
             return redirect("/")
         
         #Aquí cargamos la plantilla
-        return render_template("registroMovimientos.html", dataForm = form, resultado_api = rate_formateada, precio_cantidad = cantidad_formateada, active_page="registroMovimientos")
+        return render_template("registroMovimientos.html", dataForm = form, lista_errores=validate, resultado_api = rate_formateada, precio_cantidad = cantidad_formateada, active_page="registroMovimientos")
 
     else:
         #si es solo GET cargamos la plantilla con el formulario vacío
@@ -81,37 +85,33 @@ def registroMovimientos():
 def estadoInversion():
     lista_cryptos = []
     
-    #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla:
     invertido = total_invertido ('EUR')
     recuperado =  total_obtenido ('EUR')
     
-    if recuperado != 0:
+    valor_compra = invertido - recuperado
 
-        valor_compra = invertido - recuperado
+    #Consulta a la base de datos para saber cuántos tipos de monedas tenemos:
+    monedas = total_monedas()
 
-        #Consulta a la base de datos para saber cuántos tipos de monedas tenemos:
-        monedas = total_monedas()
+    #Recorremos la lista monedas para quitar los euros y cargar las cryptos en una nueva lista (lista_cryptos):
+    for moneda in monedas: 
+        if moneda != 'EUR':
+            lista_cryptos.append(moneda)
 
-        #Recorremos la lista monedas para quitar los euros y cargar las cryptos en una nueva lista (lista_cryptos):
-        for moneda in monedas: 
-            if moneda != 'EUR':
-                lista_cryptos.append(moneda)
-
-        #Quitamos los duplicados de las cryptos:
-        lista_cryptos = list(dict.fromkeys(lista_cryptos))
-        total_valor_actual = []
+    #Quitamos los duplicados de las cryptos:
+    lista_cryptos = list(dict.fromkeys(lista_cryptos))
+    total_valor_actual = []
         
-        #Recorremos la lista de monedas para sacar el valor actual en euros de cada una:
-        for crypto in lista_cryptos:
-            valor_diferencia = total_obtenido(crypto) - total_invertido(crypto)
-            valor_actual = calcular_cambio(crypto, "EUR") #Llamada a la API para sacar el rate
-            
-            #Hacemos una nueva lista con el valor en euros de cada crypto:
-            total_valor_actual.append(valor_diferencia*valor_actual)
+    #Recorremos la lista de monedas para sacar el valor actual en euros de cada una:
+    for crypto in lista_cryptos:
+        valor_diferencia = total_obtenido(crypto) - total_invertido(crypto)
+        valor_actual = calcular_cambio(crypto, "EUR") #Llamada a la API para sacar el rate
+        print(valor_actual)
+        #Hacemos una nueva lista con el valor en euros de cada crypto:
+        total_valor_actual.append(valor_diferencia*valor_actual)
             
         # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
         
         return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
     
-    else:
-        return render_template("estadoInversion.html",dataInvertido= invertido, dataRecuperado="0", dataValorCompra="0", dataTotalValorActual="0",active_page="estadoInversion")
+    

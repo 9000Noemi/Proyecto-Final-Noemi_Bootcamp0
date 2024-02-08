@@ -2,7 +2,7 @@ from flask_classic.db_conexion import Conexion
 
 def insert(registroForm):
     conectarInsert = Conexion("insert into Movimientos(date,time,moneda_from,cantidad_from,moneda_to,cantidad_to) values(?,?,?,?,?,?);",registroForm)
-    conectarInsert.con.commit()#funcion para validar el registro
+    conectarInsert.con.commit()
     conectarInsert.con.close()
 
 def select_all():
@@ -26,25 +26,33 @@ def select_all():
     
     return lista_diccionario   
 
-#Llamada a la BD y suma:
+#COMPROBAMOS SI TENEMOS SUFICIENTE SALDO DE UNA MONEDA - Llamada a la BD y suma:
 def coin_sum(moneda_to):
 
+    resultado = ""
     #Comporbamos el saldo de una criptomoneda:
     #  1. Sumamos todas las cantidades_to en filas cuya moneda_to es la criptomoneda buscada
     conectar = Conexion("SELECT SUM(cantidad_to) FROM Movimientos WHERE moneda_to=?", (moneda_to,))
     resultado_to = conectar.res.fetchall()
     conectar.con.close()
-    
-    #  2. Sumamos todas la cantidades_from en filas cuya moneda_from es la criptomoneda buscada
-    conectar = Conexion("SELECT SUM(cantidad_from) FROM Movimientos WHERE moneda_from=?", (moneda_to,))
-    resultado_from = conectar.res.fetchall()
-    conectar.con.close()
-    if (''.join(map(str,resultado_from[0])) != 'None'):
-        #  3. El saldo es la resta (1 - 2)
-        #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)))
-        resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
+
+    #Si hay datos en resultado_to significa que tenemos saldo y por tanto hacemos la siguiente operación
+    if(''.join(map(str,resultado_to[0])) != 'None'):
+        #  2. Sumamos todas la cantidades_from en filas cuya moneda_from es la criptomoneda buscada para restar si nos hemos gastado algo(más adelante)
+        conectar = Conexion("SELECT SUM(cantidad_from) FROM Movimientos WHERE moneda_from=?", (moneda_to,))
+        resultado_from = conectar.res.fetchall()
+        conectar.con.close()
+        
+        if (''.join(map(str,resultado_from[0])) != 'None'):
+            #  3. El saldo es la resta (1 - 2)
+            #Transformamos los datos de la BD en str y luego en float para evitar el type error de la tupla: float(''.join(map(str, xxx)))
+            resultado = float(''.join(map(str,resultado_to[0]))) - float(''.join(map(str,resultado_from[0])))
+        else:
+            resultado = float(''.join(map(str,resultado_to[0]))) 
+
     else:
-        resultado = float(''.join(map(str,resultado_to[0]))) 
+        #Si no hay datos devolvemos 0 en resultado_to
+        resultado = 0    
 
     return resultado
     

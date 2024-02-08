@@ -81,8 +81,8 @@ Dispondrá de tres menús con diferentes funciones:
 
 - Si se pretende tradear o vender una criptomoneda, el sistema no permitirá vender más cantidad de la criptomoneda que se pretende vender que el saldo de la misma que figure en la tabla movimientos. Así tendremos dos mensajes de error: 
 ```
-"No tiene suficiente saldo de esta moneda": cuando disponemos de dicha moneda pero no de la cantidad con la que se quiere trabajar.
+"No tiene suficiente saldo de esta moneda.": cuando disponemos de dicha moneda pero no de la cantidad con la que se quiere trabajar.
 
-"No dispone de saldo en esta moneda": cuando no disponemos de dicha moneda.
+"No dispone de esta moneda": cuando no disponemos de dicha moneda.
 ```
 
