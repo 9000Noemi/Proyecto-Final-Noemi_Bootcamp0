@@ -82,7 +82,7 @@ def total_obtenido(moneda_to):
 
 
 def total_monedas():
-    conectar = Conexion("SELECT (moneda_from) FROM Movimientos")
+    conectar = Conexion("SELECT (moneda_to) FROM Movimientos")
     resultado = conectar.res.fetchall()
     conectar.con.close()
 

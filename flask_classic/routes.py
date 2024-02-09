@@ -89,7 +89,7 @@ def estadoInversion():
     recuperado =  total_obtenido ('EUR')
     
     valor_compra = invertido - recuperado
-
+    
     #Consulta a la base de datos para saber cuántos tipos de monedas tenemos:
     monedas = total_monedas()
 
@@ -101,17 +101,17 @@ def estadoInversion():
     #Quitamos los duplicados de las cryptos:
     lista_cryptos = list(dict.fromkeys(lista_cryptos))
     total_valor_actual = []
-        
+       
     #Recorremos la lista de monedas para sacar el valor actual en euros de cada una:
     for crypto in lista_cryptos:
         valor_diferencia = total_obtenido(crypto) - total_invertido(crypto)
         valor_actual = calcular_cambio(crypto, "EUR") #Llamada a la API para sacar el rate
-        print(valor_actual)
+        
         #Hacemos una nueva lista con el valor en euros de cada crypto:
         total_valor_actual.append(valor_diferencia*valor_actual)
-            
-        # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
         
-        return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
+    # Sumamos todos los elementos de la lista para obtener el total en euros de todas las crypto: 
+        
+    return render_template("estadoInversion.html", dataInvertido="{:.2f}".format(invertido), dataRecuperado="{:.2f}".format(recuperado), dataValorCompra="{:.2f}".format(valor_compra), dataTotalValorActual="{:.2f}".format(sum(total_valor_actual)),active_page="estadoInversion")
     
     
